@@ -2,7 +2,7 @@ import os
 
 import click
 
-from src.save import SaveManager
+from src.save_manager import SaveManager
 
 
 @click.group()
@@ -35,6 +35,28 @@ def backup(backup_name, save_name, force):
         backups_folder=r'C:\Users\56kyl\Desktop\noita backups',
     )
     save_manager.backup(backup_name=backup_name, save_name=save_name, overwrite=force)
+    print('...Done')
+
+
+@cli.command()
+def quicksave():
+    print('Quicksaving...')
+    save_manager = SaveManager(
+        saves_folder=r'C:\Users\56kyl\AppData\LocalLow\Nolla_Games_Noita',
+        backups_folder=r'C:\Users\56kyl\Desktop\noita backups',
+    )
+    save_manager.backup(backup_name='quicksave', save_name='save00', overwrite=True)
+    print('...Done')
+
+
+@cli.command()
+def quickload():
+    print('Quickloading...')
+    save_manager = SaveManager(
+        saves_folder=r'C:\Users\56kyl\AppData\LocalLow\Nolla_Games_Noita',
+        backups_folder=r'C:\Users\56kyl\Desktop\noita backups',
+    )
+    save_manager.load(backup_name='quicksave', save_name='save00', overwrite=True)
     print('...Done')
 
 
