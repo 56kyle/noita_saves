@@ -2,6 +2,8 @@
 import os
 import shutil
 
+from loguru import logger
+
 
 class SaveManager:
     def __init__(self, saves_folder: str, backups_folder: str):
@@ -9,6 +11,7 @@ class SaveManager:
         self.backups_folder = backups_folder
 
     def backup(self, backup_name: str, save_name: str = 'save00', overwrite: bool = False):
+        logger.debug(f'Backing up save {save_name} to backup {backup_name} with overwrite={overwrite}')
         save_path: str = os.path.join(self.saves_folder, save_name)
         backup_path: str = os.path.join(self.backups_folder, backup_name)
         if os.path.exists(backup_path):
@@ -24,6 +27,7 @@ class SaveManager:
         )
 
     def load(self, backup_name: str, save_name: str = 'save00', overwrite: bool = False):
+        logger.debug(f'Loading backup {backup_name} to save {save_name} with overwrite={overwrite}')
         backup_path: str = os.path.join(self.backups_folder, backup_name)
         save_path: str = os.path.join(self.saves_folder, save_name)
         if overwrite:

@@ -44,7 +44,7 @@ if __name__ == '__main__':
     keyboard.on_press_key('up', move_mouse_to_top_middle)
     keyboard.on_press_key('down', move_mouse_to_bottom_middle)
     keyboard.on_press_key('left', move_mouse_to_left_middle)
-    keyboard.on_press_key('right', move_mouse_to_right_middle())
+    keyboard.on_press_key('right', move_mouse_to_right_middle)
     keyboard.on_press_key('`', click_mouse)
 
     while True:
