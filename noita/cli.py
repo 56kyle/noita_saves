@@ -1,21 +1,18 @@
 import click
-import os
+import time
 
 from loguru import logger
+from pathlib import Path
 
-from src.save_manager import SaveManager
-
-
-SAVES_FOLDER = r'C:\Users\56kyl\AppData\LocalLow\Nolla_Games_Noita'
-BACKUPS_FOLDER = r'C:\Users\56kyl\Desktop\noita backups'
+from noita.save_manager import SaveManager
 
 
-@click.group()
-def cli():
-    pass
+SAVES_FOLDER: Path = Path(r'C:\Users\56kyl\AppData\LocalLow\Nolla_Games_Noita')
+BACKUPS_FOLDER: Path = Path(r'C:\Users\56kyl\Desktop\noita backups')
+QUICKSAVES_FOLDER: Path = Path(r'C:\Users\56kyl\Desktop\noita quicksaves')
 
 
-@cli.command()
+@click.command()
 @click.argument('backup_name')
 @click.argument('save_name', required=False, default='save00')
 @click.option('--force', '-f', is_flag=True, help='Overwrite existing files')
@@ -29,7 +26,7 @@ def load(backup_name, save_name, force):
     logger.info('...Done')
 
 
-@cli.command()
+@click.command()
 @click.argument('backup_name')
 @click.argument('save_name', required=False, default='save00')
 @click.option('--force', '-f', is_flag=True, help='Overwrite existing files')
@@ -43,31 +40,40 @@ def backup(backup_name, save_name, force):
     logger.info('...Done')
 
 
-@cli.command()
+@click.command()
 def quicksave():
     logger.info('Quicksaving...')
     save_manager = SaveManager(
         saves_folder=SAVES_FOLDER,
-        backups_folder=BACKUPS_FOLDER,
+        backups_folder=QUICKSAVES_FOLDER,
     )
-    save_manager.backup(backup_name='quicksave', save_name='save00', overwrite=True)
+    save_manager.backup(backup_name=str(time.time_ns()), save_name='save00', overwrite=True)
     logger.info('...Done')
 
 
-@cli.command()
+@click.command()
 def quickload():
     logger.info('Quickloading...')
     save_manager = SaveManager(
         saves_folder=SAVES_FOLDER,
-        backups_folder=BACKUPS_FOLDER,
+        backups_folder=QUICKSAVES_FOLDER,
     )
-    save_manager.load(backup_name='quicksave', save_name='save00', overwrite=True)
+
+    most_recent_path_time: int = 0
+    most_recent_path = None
+    for path in QUICKSAVES_FOLDER.iterdir():
+        if int(path.name) > most_recent_path_time:
+            most_recent_path = path
+    if most_recent_path is None:
+        raise FileNotFoundError('No quicksave found')
+
+    save_manager.load(backup_name=most_recent_path.name, save_name='save00', overwrite=True)
     logger.info('...Done')
 
 
-@cli.command()
+@click.command()
 def list():
     logger.info(r'Backups in {backups_folder}:')
-    for backup_name in os.listdir(BACKUPS_FOLDER):
+    for backup_name in BACKUPS_FOLDER.iterdir():
         logger.info(f'\t{backup_name}')
 
